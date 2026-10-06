@@ -3,10 +3,21 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ພາບລວມການເງິນ</title>
+<title>My Money</title>
+<meta name="application-name" content="My Money">
+<meta name="apple-mobile-web-app-title" content="My Money">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0f2a4a">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Lao:wght@400;500;600;700&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Lao:wght@400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<link rel="preconnect" href="https://script.google.com"><link rel="preconnect" href="https://script.googleusercontent.com">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js" async onload="if (window.renderCharts) renderCharts()"></script>
 <style>
 :root {
   color-scheme: light;
@@ -135,6 +146,9 @@ section { margin-top: 28px; }
 .acct .pp { font-size: 12px; color: var(--muted); margin-top: 2px; }
 .acct .bal { font-size: 22px; font-weight: 700; margin-top: 8px; font-variant-numeric: tabular-nums; }
 .acct .sy { font-size: 11.5px; color: var(--muted); margin-top: 2px; }
+.loading { display: flex; align-items: center; gap: 12px; padding: 22px; color: var(--ink2); }
+.spin { width: 22px; height: 22px; border-radius: 50%; border: 3px solid var(--track); border-top-color: var(--s1); animation: sp 0.8s linear infinite; flex: none; }
+@keyframes sp { to { transform: rotate(360deg); } }
 .acct.total { background: var(--hero); color: #fff; border: 0; }
 .acct.total .pp, .acct.total .sy { color: rgba(255,255,255,.75); }
 </style>
@@ -143,7 +157,7 @@ section { margin-top: 28px; }
 <div class="hero">
   <div class="wrap">
     <div>
-      <h1>📊 ພາບລວມການເງິນ</h1>
+      <h1>📊 My Money</h1>
       <div class="sub" id="sub"></div>
       <button class="theme-btn" id="themeBtn" type="button">🌓 ສະຫຼັບສີ</button> <button class="theme-btn" id="reloadBtn" type="button">🔄 ໂຫຼດໃໝ່</button>
     </div>
@@ -423,8 +437,17 @@ function showMsg(html) {
 function boot() {
   var cfg = getCfg();
   if (!cfg) { el('sub').textContent = 'ຍັງບໍ່ໄດ້ເຊື່ອມຕໍ່'; connectForm(); return; }
-  el('sub').textContent = 'ກຳລັງໂຫຼດຂໍ້ມູນ...';
-  fetch(cfg.u + '?format=json&key=' + encodeURIComponent(cfg.k))
+  var cached = null; try { cached = JSON.parse(localStorage.getItem('mb_last') || 'null'); } catch (x) {}
+  if (cached) {   // ສະແດງຂໍ້ມູນຄັ້ງກ່ອນທັນທີ ລະຫວ່າງລໍຖ້າຂໍ້ມູນໃໝ່
+    document.body.classList.remove('nodata'); D = cached; renderStatic(); renderCharts();
+    el('sub').textContent = '⏳ ກຳລັງອັບເດດ... (ສະແດງຂໍ້ມູນ ' + cached.updated + ')';
+  } else {
+    el('sub').textContent = 'ກຳລັງໂຫຼດຂໍ້ມູນ...';
+    el('msg').innerHTML = '<div class="card loading"><div class="spin"></div>⏳ ກຳລັງໂຫຼດຂໍ້ມູນຈາກ Google Sheets... (ຄັ້ງທຳອິດອາດໃຊ້ເວລາ 3-5 ວິນາທີ)</div>';
+  }
+  var ctrl = window.AbortController ? new AbortController() : null;
+  if (ctrl) setTimeout(function () { ctrl.abort(); }, 25000);
+  fetch(cfg.u + '?format=json&key=' + encodeURIComponent(cfg.k), ctrl ? { signal: ctrl.signal } : {})
     .then(function (r) { return r.json(); })
     .then(function (j) {
       if (!j || j.error) throw new Error(j && j.error === 'unauthorized' ? 'ລິ້ງໝົດອາຍຸ ຫຼື ຖືກປ່ຽນ' : 'ບໍ່ມີຂໍ້ມູນ');
