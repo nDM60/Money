@@ -102,6 +102,10 @@ money-pocket/
 
 Use your PostgreSQL provider's automated backups / point-in-time recovery, or `pg_dump` on a schedule. For embedded local mode, back up the `.data/` folder while the app is stopped. Users can also download a full JSON export.
 
+### Deploying to Render (free, alternative to Vercel)
+
+`render.yaml` at the repository root is a Render Blueprint: Render → **New → Blueprint** → pick the repo → enter `DATABASE_URL` (e.g. a Neon connection string). `APP_SECRET` and `CRON_SECRET` are generated, and the in-process scheduler is enabled. The app is served at `https://<name>.onrender.com`. Free instances sleep after ~15 minutes idle, so the first request after a pause takes 30–60 s, and scheduled notifications only run while the instance is awake (add an external cron calling `/api/cron/tick` to wake it).
+
 ### Deploying
 
 Any Node 20+ host works. For serverless platforms (Vercel, Netlify), set `DATABASE_URL` to a managed PostgreSQL such as Neon, Supabase or RDS, because the embedded database needs a persistent disk. Receipt images are stored in the database (`bytea`, private per user), so no separate object storage is required.
