@@ -16,3 +16,4 @@ async function handle(req: Request) {
 export const GET = handle;
 export const POST = handle;
 export const dynamic = "force-dynamic";
+export const maxDuration = 60;

@@ -10,3 +10,4 @@ export const POST = route(async ({ user, body }) => {
   const { message, sessionId } = await body(input);
   return chat(await getDb(), user.id, message, sessionId);
 }, { rateLimit: { name: "chat", limit: 60, windowSec: 3600 } });
+export const maxDuration = 60;

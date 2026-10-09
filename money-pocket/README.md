@@ -59,7 +59,7 @@ The scheduler pass (`/api/cron/tick`) is idempotent, so it can be called every f
 
 Every notification has a dedupe key (for example `daily:2026-10-09`), so repeated calls never send duplicates. Call it with one of these:
 
-- **Vercel Cron**: `vercel.json` schedules `*/10 * * * *`. Vercel sends `Authorization: Bearer $CRON_SECRET` automatically. The Hobby plan only allows daily crons, so use Pro or an external caller.
+- **Vercel Cron**: `vercel.json` runs the tick once a day at 15:00 UTC (22:00 in Vientiane/Bangkok/Hanoi), which is the most the Hobby plan allows; Hobby crons may also fire up to an hour late. Vercel sends `Authorization: Bearer $CRON_SECRET` automatically. For summaries close to each user's reminder time, also call the endpoint every 10 minutes from a free external scheduler (for example cron-job.org) with the same header, or on the Pro plan change the schedule to `*/10 * * * *`.
 - **System cron / GitHub Actions**: `APP_URL=… CRON_SECRET=… node scripts/cron-tick.mjs` every 10 minutes.
 - **Self-hosted Node** (`npm start` on a VPS): set `INTERNAL_SCHEDULER=true`.
 
