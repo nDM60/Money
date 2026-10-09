@@ -1,0 +1,25 @@
+# Render Blueprint for Money Pocket (free web service, Singapore).
+# Render → New → Blueprint → pick this repo. You'll be asked for DATABASE_URL
+# (the Neon connection string); the secrets are generated automatically.
+services:
+  - type: web
+    name: money-pocket
+    runtime: node
+    plan: free
+    region: singapore
+    rootDir: money-pocket
+    buildCommand: npm ci && npm run build
+    startCommand: npm start
+    healthCheckPath: /login
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      - key: DATABASE_URL
+        sync: false
+      - key: APP_SECRET
+        generateValue: true
+      - key: CRON_SECRET
+        generateValue: true
+      # Free instances sleep when idle; the in-process scheduler runs while awake.
+      - key: INTERNAL_SCHEDULER
+        value: "true"
