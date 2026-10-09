@@ -1,0 +1,145 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+/* ---------- Design tokens ---------- */
+:root {
+  color-scheme: light;
+  --page: #f3f4f6;
+  --card: #ffffff;
+  --card-2: #f8f9fb;
+  --line: #e5e7eb;
+  --grid: #eef0f3;
+  --ink: #0b1220;
+  --ink-2: #4b5563;
+  --muted: #8a919c;
+  --brand: #0f766e;
+  --brand-ink: #ffffff;
+  --brand-soft: #e6f4f2;
+  --hero-1: #0b1f3a;
+  --hero-2: #134e5e;
+  /* data roles (validated categorical set) */
+  --income: #1baf7a;
+  --expense: #eb6834;
+  --savings: #2a78d6;
+  --invest: #4a3aa7;
+  /* text-safe variants for signed figures */
+  --pos-text: #0b7a52;
+  --neg-text: #c2410c;
+  --good: #16a34a;
+  --warn: #c98500;
+  --bad: #dc2626;
+  --track: #eef0f3;
+  --shadow: 0 1px 2px rgb(15 23 42 / 0.04), 0 4px 16px rgb(15 23 42 / 0.04);
+  --font-sans: "Inter", "Noto Sans Lao", "Noto Sans Thai", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --page: #0c0d10;
+  --card: #16181c;
+  --card-2: #1c1f24;
+  --line: #272a31;
+  --grid: #23262c;
+  --ink: #f4f5f7;
+  --ink-2: #b8bdc7;
+  --muted: #8a909b;
+  --brand: #2bb5a3;
+  --brand-ink: #04211d;
+  --brand-soft: #0f2d2a;
+  --hero-1: #0a1830;
+  --hero-2: #0f3b47;
+  --income: #199e70;
+  --expense: #d95926;
+  --savings: #3987e5;
+  --invest: #d55181;
+  --pos-text: #4fd1a1;
+  --neg-text: #f39a6f;
+  --good: #22c55e;
+  --warn: #eab308;
+  --bad: #f87171;
+  --track: #262a31;
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.3);
+}
+
+@theme inline {
+  --color-page: var(--page);
+  --color-card: var(--card);
+  --color-card-2: var(--card-2);
+  --color-line: var(--line);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-muted: var(--muted);
+  --color-brand: var(--brand);
+  --color-brand-ink: var(--brand-ink);
+  --color-brand-soft: var(--brand-soft);
+  --color-income: var(--income);
+  --color-expense: var(--expense);
+  --color-savings: var(--savings);
+  --color-invest: var(--invest);
+  --color-pos: var(--pos-text);
+  --color-neg: var(--neg-text);
+  --color-good: var(--good);
+  --color-warn: var(--warn);
+  --color-bad: var(--bad);
+  --color-track: var(--track);
+  --font-sans: var(--font-sans);
+}
+
+html, body { background: var(--page); color: var(--ink); }
+body { font-family: var(--font-sans); -webkit-font-smoothing: antialiased; font-feature-settings: "cv11", "ss01"; }
+:lang(lo) body, body:lang(lo) { line-height: 1.6; }
+:lang(th) body, body:lang(th) { line-height: 1.6; }
+
+.num { font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
+
+.card { background: var(--card); border: 1px solid var(--line); border-radius: 18px; box-shadow: var(--shadow); }
+.hero { background: radial-gradient(120% 140% at 0% 0%, var(--hero-2) 0%, var(--hero-1) 60%); color: #fff; }
+
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: .5rem; border-radius: 12px; font-weight: 600; font-size: .875rem; padding: .6rem 1rem; transition: background .15s, opacity .15s, transform .05s; white-space: nowrap; }
+.btn:active { transform: scale(.98); }
+.btn:disabled { opacity: .5; pointer-events: none; }
+.btn-primary { background: var(--brand); color: var(--brand-ink); }
+.btn-primary:hover { filter: brightness(1.06); }
+.btn-ghost { background: transparent; color: var(--ink-2); }
+.btn-ghost:hover { background: var(--card-2); color: var(--ink); }
+.btn-soft { background: var(--card-2); color: var(--ink); border: 1px solid var(--line); }
+.btn-soft:hover { background: var(--line); }
+.btn-danger { background: color-mix(in srgb, var(--bad) 12%, transparent); color: var(--bad); }
+.btn-sm { padding: .4rem .7rem; font-size: .8125rem; border-radius: 10px; }
+
+.input { width: 100%; background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: .6rem .8rem; font-size: .9375rem; color: var(--ink); outline: none; transition: border-color .15s, box-shadow .15s; }
+.input:focus { border-color: var(--brand); box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand) 20%, transparent); }
+.input.warn { border-color: var(--warn); box-shadow: 0 0 0 3px color-mix(in srgb, var(--warn) 18%, transparent); }
+.label { display: block; font-size: .8125rem; font-weight: 600; color: var(--ink-2); margin-bottom: .35rem; }
+select.input { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238a919c' stroke-width='2.5'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right .8rem center; padding-right: 2.2rem; }
+
+.chip { display: inline-flex; align-items: center; gap: .35rem; padding: .2rem .55rem; border-radius: 999px; font-size: .75rem; font-weight: 600; background: var(--card-2); color: var(--ink-2); border: 1px solid var(--line); }
+
+.seg { display: inline-flex; background: var(--card-2); border: 1px solid var(--line); border-radius: 12px; padding: 3px; gap: 2px; }
+.seg button { padding: .35rem .75rem; border-radius: 9px; font-size: .8125rem; font-weight: 600; color: var(--ink-2); }
+.seg button[aria-pressed="true"] { background: var(--card); color: var(--ink); box-shadow: 0 1px 2px rgb(0 0 0 / .08); }
+
+.meter { height: 8px; background: var(--track); border-radius: 99px; overflow: hidden; }
+.meter > i { display: block; height: 100%; border-radius: 99px; transition: width .4s ease; }
+
+.fade-in { animation: fadeIn .25s ease both; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+.sheet-in { animation: sheetIn .22s cubic-bezier(.2,.8,.2,1) both; }
+@keyframes sheetIn { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .fade-in, .sheet-in { animation: none; } .meter > i { transition: none; } }
+
+.safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
+.scrollbar-none::-webkit-scrollbar { display: none; }
+.scrollbar-none { scrollbar-width: none; }
+
+/* recharts */
+.recharts-cartesian-grid line { stroke: var(--grid); }
+.recharts-text { fill: var(--muted); font-size: 11px; }
+.recharts-tooltip-cursor { fill: color-mix(in srgb, var(--ink) 5%, transparent); }
+
+@media print {
+  .no-print { display: none !important; }
+  body { background: #fff; }
+  .card { box-shadow: none; break-inside: avoid; }
+}
