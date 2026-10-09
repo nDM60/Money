@@ -8,9 +8,10 @@
     "build": "next build",
     "start": "next start",
     "lint": "tsc --noEmit",
-    "db:generate": "drizzle-kit generate",
+    "db:generate": "drizzle-kit generate && node scripts/bundle-migrations.mjs",
     "test": "vitest run",
-    "cron": "node scripts/cron-tick.mjs"
+    "cron": "node scripts/cron-tick.mjs",
+    "prebuild": "node scripts/bundle-migrations.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.133.0",
