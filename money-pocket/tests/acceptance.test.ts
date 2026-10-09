@@ -367,3 +367,23 @@ describe("Test 10 — persistence across logout/login", () => {
     expect(list.body.total).toBe(1);
   });
 });
+
+describe("password hashing", () => {
+  it("upgrades an older, slower hash on successful login", async () => {
+    const bcrypt = (await import("bcryptjs")).default;
+    const { schema } = await import("@/server/db");
+    const { eq } = await import("drizzle-orm");
+    const { BCRYPT_COST } = await import("@/server/auth");
+    const email = `rehash-${Date.now()}@example.com`;
+    const reg = await RegisterRoute.POST(new Request("http://localhost/api/auth/register", { method: "POST", headers: { host: "localhost", "content-type": "application/json" }, body: JSON.stringify({ email, password: "a strong password" }) }), noParams);
+    const { id } = await reg.json();
+    let [u] = await db.select().from(schema.users).where(eq(schema.users.id, id));
+    expect(bcrypt.getRounds(u.passwordHash)).toBe(BCRYPT_COST);
+    await db.update(schema.users).set({ passwordHash: await bcrypt.hash("a strong password", 12) }).where(eq(schema.users.id, id));
+    const login = await LoginRoute.POST(new Request("http://localhost/api/auth/login", { method: "POST", headers: { host: "localhost", "content-type": "application/json" }, body: JSON.stringify({ email, password: "a strong password" }) }), noParams);
+    expect(login.status).toBe(200);
+    [u] = await db.select().from(schema.users).where(eq(schema.users.id, id));
+    expect(bcrypt.getRounds(u.passwordHash)).toBe(BCRYPT_COST);
+    expect(await bcrypt.compare("a strong password", u.passwordHash)).toBe(true);
+  });
+});
