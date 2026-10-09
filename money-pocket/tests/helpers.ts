@@ -35,11 +35,10 @@ export function params(p: Record<string, string>) {
 async function realPostgres(url: string): Promise<DB> {
   const pg = await import("pg");
   const { drizzle } = await import("drizzle-orm/node-postgres");
-  const { migrate } = await import("drizzle-orm/node-postgres/migrator");
-  const { schema } = await import("@/server/db");
+  const { schema, runMigrations } = await import("@/server/db");
   const pool = new pg.default.Pool({ connectionString: url });
   await pool.query("drop schema if exists public cascade; drop schema if exists drizzle cascade; create schema public;");
-  const db = drizzle(pool, { schema });
-  await migrate(db, { migrationsFolder: "drizzle" });
-  return db as unknown as DB;
+  const db = drizzle(pool, { schema }) as unknown as DB;
+  await runMigrations(db);
+  return db;
 }
