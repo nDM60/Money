@@ -10,8 +10,23 @@ export function hashToken(token: string) {
   return crypto.createHash("sha256").update(token).digest("hex");
 }
 
+/**
+ * bcrypt cost. 10 is the OWASP minimum and keeps login fast on small shared
+ * CPUs (cost 12 is ~0.3 s on a full core, roughly 10x that on a 0.1-CPU free instance).
+ */
+export const BCRYPT_COST = 10;
+
 export async function hashPassword(pw: string) {
-  return bcrypt.hash(pw, 12);
+  return bcrypt.hash(pw, BCRYPT_COST);
+}
+
+/** True when a stored hash was made with a different cost and should be upgraded. */
+export function needsRehash(hash: string) {
+  try {
+    return bcrypt.getRounds(hash) !== BCRYPT_COST;
+  } catch {
+    return false;
+  }
 }
 
 export async function verifyPassword(pw: string, hash: string) {
